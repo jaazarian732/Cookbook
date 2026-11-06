@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>James & Kim's Cookbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage: #4A6741;
+    --sage-light: #E8EDE4;
+    --sage-mid: #7A9B70;
+    --base: #F9F6F0;
+    --surface: #FFFFFF;
+    --terra: #C17F5E;
+    --text: #2C2C2C;
+    --text-soft: #6B6B6B;
+    --border: #DDD8D0;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--base);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--sage);
+    padding: 20px 24px 0;
+  }
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .header-top h1 {
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .header-top span {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.65);
+  }
+  nav {
+    display: flex;
+    gap: 2px;
+  }
+  nav button {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  nav button.active {
+    background: var(--base);
+    color: var(--sage);
+  }
+  nav button:not(.active):hover {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.1);
+  }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .recipes-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .category-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: #fff;
+  }
+  .btn-primary {
+    background: var(--sage);
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: #3a5332; }
+  .btn-secondary {
+    background: none;
+    color: var(--sage);
+    border: 1.5px solid var(--sage);
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--sage-light); }
+
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .recipe-card {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .recipe-card:hover {
+    border-color: var(--sage-mid);
+    box-shadow: var(--shadow);
+  }
+  .recipe-card-category {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--sage);
+    margin-bottom: 8px;
+    background: var(--sage-light);
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .recipe-card h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .recipe-card-meta {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    display: flex;
+    gap: 12px;
+  }
+  .recipe-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-ghost {
+    background: none;
+    border: none;
+    color: var(--text-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .btn-ghost:hover { background: var(--sage-light); color: var(--sage); }
+  .btn-danger {
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .btn-danger:hover { background: #fdf0ef; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 620px;
+    padding: 32px;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none; border: none;
+    font-size: 1.3rem;
+    color: var(--text-soft);
+    cursor: pointer;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+  }
+  .modal-close:hover { background: var(--sage-light); }
+  .modal-category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--sage);
+    background: var(--sage-light);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .modal h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .modal-serves {
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    margin-bottom: 24px;
+  }
+  .modal-section-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-ingredients {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+  .modal-ingredients li {
+    font-size: 0.88rem;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--base);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.4;
+  }
+  .modal-ingredients li::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: var(--sage-mid);
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .modal-steps ol {
+    padding-left: 0;
+    list-style: none;
+    counter-reset: steps;
+  }
+  .modal-steps li {
+    counter-increment: steps;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding: 8px 0 8px 36px;
+    position: relative;
+    border-bottom: 1px solid var(--base);
+  }
+  .modal-steps li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0; top: 10px;
+    width: 24px; height: 24px;
+    background: var(--sage);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-notes {
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--sage-light);
+    border-radius: 8px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-soft); }
+  .form-group input, .form-group select, .form-group textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: var(--base);
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--sage);
+    background: #fff;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  .planner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .planner-header h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  .day-col { display: flex; flex-direction: column; gap: 8px; }
+  .day-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-align: center;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .meal-slot {
+    background: var(--surface);
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    min-height: 70px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .meal-slot:hover { border-color: var(--sage-mid); background: var(--sage-light); }
+  .meal-slot.filled { border-style: solid; border-color: var(--border); background: var(--surface); }
+  .meal-slot-label { font-size: 0.65rem; font-weight: 600; color: var(--text-soft); margin-bottom: 4px; }
+  .meal-slot-recipe { font-family: 'Lora', serif; font-size: 0.8rem; line-height: 1.3; }
+  .meal-slot-empty-hint {
+    font-size: 0.72rem; color: var(--border);
+    text-align: center; display: flex;
+    align-items: center; justify-content: center;
+    height: 100%; min-height: 44px;
+  }
+  .meal-slot-remove {
+    position: absolute; top: 4px; right: 4px;
+    background: none; border: none;
+    font-size: 0.75rem; color: var(--text-soft);
+    cursor: pointer; width: 18px; height: 18px;
+    border-radius: 3px; display: flex;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.1s;
+  }
+  .meal-slot:hover .meal-slot-remove { opacity: 1; }
+  .meal-slot-remove:hover { background: var(--border); }
+
+  .pick-list {
+    list-style: none;
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .pick-list li {
+    padding: 11px 14px; cursor: pointer;
+    border-bottom: 1px solid var(--base);
+    display: flex; align-items: center; gap: 10px;
+    transition: background 0.1s;
+  }
+  .pick-list li:last-child { border-bottom: none; }
+  .pick-list li:hover { background: var(--sage-light); }
+  .pick-cat {
+    font-size: 0.7rem; background: var(--sage-light);
+    color: var(--sage); padding: 2px 6px;
+    border-radius: 3px; font-weight: 500; white-space: nowrap;
+  }
+  .pick-name { font-family: 'Lora', serif; font-size: 0.9rem; }
+
+  .shopping-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 8px;
+  }
+  .shopping-header h2 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 500; }
+  .shopping-subtitle { font-size: 0.82rem; color: var(--text-soft); margin-bottom: 24px; }
+  .shopping-section { margin-bottom: 28px; }
+  .shopping-section-title {
+    font-size: 0.8rem; font-weight: 600; color: var(--sage);
+    padding-bottom: 8px; border-bottom: 1.5px solid var(--sage-light); margin-bottom: 10px;
+  }
+  .shopping-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid var(--base);
+    font-size: 0.87rem; line-height: 1.4;
+  }
+  .shopping-item input[type="checkbox"] {
+    margin-top: 2px; accent-color: var(--sage);
+    cursor: pointer; width: 15px; height: 15px; flex-shrink: 0;
+  }
+  .shopping-item.checked span { text-decoration: line-through; color: var(--text-soft); }
+  .shopping-item-source { font-size: 0.72rem; color: var(--text-soft); margin-left: auto; white-space: nowrap; }
+  .shopping-empty { text-align: center; padding: 48px 24px; color: var(--text-soft); }
+  .shopping-empty p:first-child { font-family: 'Lora', serif; font-size: 1.1rem; margin-bottom: 6px; }
+
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--text-soft); }
+  .empty-state p:first-child { font-family: 'Lora', serif; font-size: 1.15rem; margin-bottom: 8px; }
+  .empty-state p { font-size: 0.85rem; margin-bottom: 20px; }
+
+  @media (max-width: 700px) {
+    .week-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .recipes-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    main { padding: 20px 14px; }
+    .modal { padding: 24px 18px; }
+    nav button { padding: 8px 12px; font-size: 0.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>James & Kim's Cookbook</h1>
+    <span>our kitchen, our recipes</span>
+  </div>
+  <nav>
+    <button class="active" onclick="switchView('recipes')">Recipes</button>
+    <button onclick="switchView('planner')">Meal Planner</button>
+    <button onclick="switchView('shopping')">Shopping List</button>
+  </nav>
+</header>
+
+<main>
+  <div id="view-recipes" class="view active">
+    <div class="recipes-toolbar">
+      <div class="category-filters">
+        <button class="filter-btn active" data-cat="all" onclick="filterRecipes('all')">All</button>
+        <button class="filter-btn" data-cat="Dinner" onclick="filterRecipes('Dinner')">Dinner</button>
+        <button class="filter-btn" data-cat="Lunch" onclick="filterRecipes('Lunch')">Lunch</button>
+        <button class="filter-btn" data-cat="Breakfast" onclick="filterRecipes('Breakfast')">Breakfast</button>
+        <button class="filter-btn" data-cat="Snack" onclick="filterRecipes('Snack')">Snack</button>
+        <button class="filter-btn" data-cat="Baking" onclick="filterRecipes('Baking')">Baking</button>
+      </div>
+      <button class="btn-primary" onclick="openAddRecipe()">+ Add Recipe</button>
+    </div>
+    <div class="recipes-grid" id="recipes-grid"></div>
+  </div>
+
+  <div id="view-planner" class="view">
+    <div class="planner-header">
+      <h2>This Week's Meals</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" onclick="clearPlanner()">Clear week</button>
+        <button class="btn-primary" onclick="buildShoppingList()">Build shopping list</button>
+      </div>
+    </div>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <div id="view-shopping" class="view">
+    <div class="shopping-header">
+      <h2>Shopping List</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" onclick="clearChecked()">Clear checked</button>
+        <button class="btn-secondary" onclick="copyList()">Copy list</button>
+      </div>
+    </div>
+    <p class="shopping-subtitle" id="shopping-subtitle">Build from your meal plan, or add items manually.</p>
+    <div id="shopping-content"></div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="modal-detail" onclick="closeModalIfOverlay(event,'modal-detail')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-form" onclick="closeModalIfOverlay(event,'modal-form')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-form')">✕</button>
+    <h2 style="font-family:'Lora',serif;font-size:1.3rem;font-weight:500;margin-bottom:20px;" id="form-title">Add Recipe</h2>
+    <form id="recipe-form" onsubmit="saveRecipe(event)">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Recipe name</label>
+          <input type="text" id="f-name" placeholder="e.g. Chicken Parm" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="f-category">
+            <option>Dinner</option>
+            <option>Lunch</option>
+            <option>Breakfast</option>
+            <option>Snack</option>
+            <option>Baking</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Serves</label>
+          <input type="text" id="f-serves" placeholder="e.g. 4">
+        </div>
+        <div class="form-group form-full">
+          <label>Ingredients (one per line)</label>
+          <textarea id="f-ingredients" rows="6" placeholder="Panko bread crumbs&#10;2 chicken breasts&#10;Pasta&#10;Marinara sauce&#10;Mozzarella cheese"></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label>Instructions (one step per line)</label>
+          <textarea id="f-steps" rows="6" placeholder="Pound chicken breasts to even thickness&#10;Coat in panko bread crumbs&#10;..."></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label>Notes (optional)</label>
+          <textarea id="f-notes" rows="2" placeholder="Kim's tip, substitutions, etc."></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal('modal-form')">Cancel</button>
+        <button type="submit" class="btn-primary" id="form-submit-btn">Save recipe</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-pick" onclick="closeModalIfOverlay(event,'modal-pick')">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="closeModal('modal-pick')">✕</button>
+    <h2 style="font-family:'Lora',serif;font-size:1.2rem;font-weight:500;margin-bottom:16px;">Pick a recipe</h2>
+    <ul class="pick-list" id="pick-list"></ul>
+    <button class="btn-secondary" onclick="closeModal('modal-pick')">Cancel</button>
+  </div>
+</div>
+
+<script>
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const MEALS = ['Breakfast','Lunch','Dinner'];
+
+function loadData() {
+  try {
+    const r = localStorage.getItem('jk_recipes');
+    const p = localStorage.getItem('jk_planner');
+    const s = localStorage.getItem('jk_shopping');
+    return {
+      recipes: r ? JSON.parse(r) : getDefaultRecipes(),
+      planner: p ? JSON.parse(p) : {},
+      shopping: s ? JSON.parse(s) : []
+    };
+  } catch(e) { return { recipes: getDefaultRecipes(), planner: {}, shopping: [] }; }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('jk_recipes', JSON.stringify(data.recipes));
+    localStorage.setItem('jk_planner', JSON.stringify(data.planner));
+    localStorage.setItem('jk_shopping', JSON.stringify(data.shopping));
+  } catch(e) {}
+}
+
+function getDefaultRecipes() {
+  return [
+    {
+      id: uid(),
+      name: "Chicken Parm",
+      category: "Dinner",
+      serves: "4",
+      ingredients: ["2 large chicken breasts","1 cup panko bread crumbs","2 eggs, beaten","1/2 cup flour","Marinara sauce","1 cup shredded mozzarella","12 oz pasta (spaghetti or penne)","Salt, pepper, garlic powder, Italian seasoning","Olive oil"],
+      steps: ["Pound chicken breasts to even thickness (about 1/2 inch). Season with salt, pepper, garlic powder, and Italian seasoning.","Set up a breading station: flour in one bowl, beaten eggs in a second, panko in a third.","Dredge each breast in flour, dip in egg, then press firmly into panko so it sticks.","Heat olive oil in an oven-safe skillet over medium-high. Sear chicken 3–4 min per side until golden.","Top with marinara and mozzarella. Bake at 400°F for 15–18 min until cheese is bubbling.","Meanwhile cook pasta to package directions. Serve chicken over pasta with extra sauce."],
+      notes: "Use fresh mozzarella if you have it. Leftovers reheat great in the air fryer."
+    },
+    {
+      id: uid(),
+      name: "Kim's Fried Rice",
+      category: "Dinner",
+      serves: "3–4",
+      ingredients: ["2 cups day-old white rice (cold)","2 eggs","1 cup frozen mixed vegetables","1–2 chicken breasts, cooked and diced","3 tbsp amino sauce (coconut aminos or soy sauce)","2 cloves garlic, minced","1 tsp sesame oil (optional)","Vegetable oil","Green onion for garnish (optional)"],
+      steps: ["Heat a large wok or skillet over high heat with a drizzle of vegetable oil.","Add garlic and stir-fry 30 seconds until fragrant.","Add frozen vegetables and cook 2–3 min until thawed and heated through.","Push everything to the side. Scramble eggs in the empty space until just set, then mix in.","Add cold rice and break up any clumps. Stir-fry 3–4 min until rice is heated and slightly crispy.","Add diced chicken and amino sauce. Toss everything together over high heat 2 min.","Finish with sesame oil if using. Taste and adjust seasoning."],
+      notes: "Cold day-old rice is key — fresh rice gets mushy. Great way to use leftover chicken."
+    },
+    {
+      id: uid(),
+      name: "Kim's Work Burritos",
+      category: "Lunch",
+      serves: "4",
+      ingredients: ["4 large flour tortillas","1 cup white rice (cooked in low-sodium chicken broth)","1 can black beans, drained and rinsed","2 chicken breasts, cooked and shredded","1 cup Mexican cheese blend, shredded","Salsa or hot sauce (optional)","Sour cream (optional)"],
+      steps: ["Cook white rice using low-sodium chicken broth instead of water for more flavor.","Season and cook chicken however you prefer (bake, pan-sear, or use rotisserie). Shred with two forks.","Warm tortillas in a dry skillet or microwave until pliable.","Layer rice, beans, chicken, and cheese down the center of each tortilla.","Fold in the sides, then roll up tightly from the bottom.","Wrap each burrito in foil for easy grab-and-go. Store in the fridge up to 4 days."],
+      notes: "Meal-prep friendly — make a batch Sunday and Kim has lunches all week. Add jalapeños or corn for variety."
+    },
+    {
+      id: uid(),
+      name: "Protein Smoothie",
+      category: "Lunch",
+      serves: "1",
+      ingredients: ["1 cup mixed berries (fresh or frozen)","1 banana","1 cup oat milk","1 scoop protein powder"],
+      steps: ["Add oat milk to the blender first to help everything blend smoothly.","Add banana, berries, and protein powder.","Blend on high 30–45 seconds until smooth. Add more oat milk if too thick."],
+      notes: "Frozen berries make it thicker and colder without needing ice. Great pre- or post-workout."
+    },
+    {
+      id: uid(),
+      name: "Burgers",
+      category: "Dinner",
+      serves: "4",
+      ingredients: ["1.5 lbs ground beef (80/20)","4 burger buns","Pickles","Ketchup","1 onion, sliced","Salt and pepper"],
+      steps: ["Divide ground beef into 4 equal portions. Shape into patties slightly wider than the bun (they shrink). Press a small indent in the center of each with your thumb.","Season generously with salt and pepper on both sides.","Heat a cast iron skillet or grill over high heat. Cook patties 3–4 min per side for medium, pressing down only once.","Toast buns in the pan for 1 min while patties rest.","Build: bun, patty, pickles, onion, ketchup."],
+      notes: "Don't overwork the meat when shaping — loose packing keeps them juicy. Let patties rest 2 min before building."
+    },
+    {
+      id: uid(),
+      name: "Salmon",
+      category: "Dinner",
+      serves: "2",
+      ingredients: ["2 salmon fillets","1 lemon, sliced","Olive oil","Salt, pepper, garlic powder"],
+      steps: ["Pat salmon dry with paper towels. Season both sides with salt, pepper, and garlic powder.","Heat olive oil in a skillet over medium-high until shimmering.","Place salmon skin-side up and cook 4 min without moving. Flip and cook another 3–4 min.","Squeeze lemon over the top and serve with lemon slices on the side."],
+      notes: "Starting skin-side up gives you a better sear on the flesh. Salmon is done when it flakes easily with a fork."
+    },
+    {
+      id: uid(),
+      name: "Steak with Garlic Mushrooms",
+      category: "Dinner",
+      serves: "2",
+      ingredients: ["2 steaks (ribeye or NY strip)","3 cloves garlic, minced","1 large onion, sliced","8 oz mushrooms, sliced","2 tbsp butter","Olive oil","Salt and pepper"],
+      steps: ["Take steaks out of the fridge 30 min before cooking. Pat dry and season generously with salt and pepper.","Heat a cast iron skillet over high heat until smoking. Add a drizzle of oil.","Sear steaks 3–4 min per side for medium-rare. Add butter and garlic in the last minute, basting the steak.","Rest steaks on a cutting board for 5–10 min.","In the same pan over medium heat, sauté onions 5 min until soft. Add mushrooms and cook another 5 min until golden. Season with salt.","Slice steak against the grain and serve topped with mushrooms and onions."],
+      notes: "Resting the steak is non-negotiable — it keeps all the juices in. Use the same pan for the mushrooms to get all that flavor."
+    },
+    {
+      id: uid(),
+      name: "Burrata Pasta",
+      category: "Dinner",
+      serves: "4",
+      ingredients: ["12 oz pasta (rigatoni or penne)","1 pint cherry tomatoes","4 cloves garlic, smashed","4 oz burrata cheese","1/4 cup olive oil","Salt, pepper, red pepper flakes","Fresh basil (optional)","Reserved pasta water"],
+      steps: ["Preheat oven to 400°F. Toss cherry tomatoes and smashed garlic in olive oil, salt, pepper, and red pepper flakes on a sheet pan.","Roast 20–25 min until tomatoes are burst and caramelized.","Cook pasta to package directions, reserving 1 cup pasta water before draining.","Transfer roasted tomatoes and garlic to a blender or food processor. Add burrata and blend until smooth.","Toss pasta with the sauce, adding pasta water a splash at a time until it coats the noodles.","Serve immediately with fresh basil and extra black pepper."],
+      notes: "Don't skip the pasta water — the starch is what makes the sauce silky and helps it cling. Burrata is creamier than mozzarella and makes the sauce much richer."
+    },
+    {
+      id: uid(),
+      name: "Yev's Apple Cinnamon Muffins",
+      category: "Baking",
+      serves: "8 muffins",
+      ingredients: ["1 medium apple, diced","1 tbsp sugar-free maple syrup (or honey)","1 1/2 cups flour (gluten-free works great)","1 scoop protein powder, snickerdoodle flavor (optional)","1 tbsp baking powder","2 tsp cinnamon","1/2 tsp salt","4 tbsp butter","1 egg","1 cup monk fruit sweetener","2 tsp vanilla extract","220g fat-free plain Greek yogurt","1/2 cup unsweetened almond milk","Crumble topping: 1/4 cup oats, 1/4 cup flour, 3 tbsp sugar-free maple syrup (or honey)"],
+      steps: ["Preheat oven to 350°F.","Dice the apple and place in a microwave-safe bowl. Add 1 tbsp sugar-free maple syrup and microwave for 1 minute. Set aside.","In a large bowl, mix together the flour, protein powder (if using), baking powder, cinnamon, and salt.","In a separate microwave-safe bowl, melt the butter for 30 seconds.","Whisk the egg into the melted butter. Whisk in monk fruit sweetener and vanilla extract. Whisk in the Greek yogurt.","Stir the wet ingredients into the dry ingredients. Stir in almond milk. Fold in the cooked apples.","In a small bowl, mix together the crumble topping: oats, flour, and maple syrup.","Evenly distribute the batter into a greased muffin tin (8 muffins). Sprinkle the oat crumble on top of each.","Bake for 30 minutes until golden and a toothpick comes out clean."],
+      notes: "Recipe from Yev (@eat.cheat.t). Protein powder is optional but adds a nice macros boost — snickerdoodle flavor complements the apple cinnamon perfectly. Monk fruit keeps it sugar-free. Swap honey for maple syrup if you prefer (adds a few calories)."
+    },
+    {
+      id: uid(),
+      name: "Yev's Banana Chocolate Chip Muffins",
+      category: "Baking",
+      serves: "12 muffins",
+      ingredients: ["1 cup white whole wheat flour","1/2 cup bread flour","1/2 cup sugar-free sweetener (monk fruit or stevia)","1 scoop protein powder","1/2 tsp baking powder","1/2 tsp baking soda","1/4 tsp salt","1 tsp cinnamon","1.5 servings sugar-free chocolate chips (optional — sub blueberries)","2 ripe bananas, mashed","1/3 cup unsweetened applesauce","1 tsp vanilla extract","1/4 cup sugar-free maple syrup (or agave or honey)","2 eggs","1 cup unsweetened almond milk"],
+      steps: ["Preheat oven to 350°F.","In a large bowl, whisk together all dry ingredients: flours, sweetener, protein powder, baking powder, baking soda, salt, and cinnamon. Stir in chocolate chips if using.","In a separate bowl, mix all wet ingredients: mashed bananas, applesauce, vanilla extract, maple syrup, eggs, and almond milk.","Add wet ingredients to dry and stir until just combined — don't overmix.","Divide batter evenly into a greased or lined muffin tin.","Bake at 350°F for about 25 minutes until a toothpick comes out clean.","Let cool before eating."],
+      notes: "Recipe from @eat.cheat.train.sleep. 173 cal per muffin, 3g fat, 9g protein, 30g carbs, 4g fiber. Tip: when bananas are going bad, peel and freeze them — perfect for this. Great as a snack or breakfast with Greek yogurt on the side."
+    },
+    {
+      id: uid(),
+      name: "Yev's Blueberry Muffins",
+      category: "Baking",
+      serves: "12 muffins",
+      ingredients: ["1 1/2 cups flour","1 tbsp baking powder","Pinch of salt","1 scoop protein powder","4 tbsp butter","1 cup sugar (or monk fruit sweetener for 0 calories)","1 tsp vanilla extract","1 egg","220g plain Greek yogurt","Unsweetened vanilla almond milk (as needed)","Fresh or frozen blueberries (or strawberries, mixed berries, or chocolate chips)"],
+      steps: ["Preheat oven to 350°F.","In a large bowl, mix together flour, baking powder, salt, and protein powder.","In a medium bowl, microwave butter until melted. Stir in sweetener, vanilla extract, egg, and Greek yogurt until smooth.","Add wet mixture to the flour bowl and stir to combine. Add almond milk a splash at a time as needed to loosen the batter.","Fold in blueberries.","Divide into a greased or lined muffin tin.","Bake at 350°F for 25–30 minutes until golden and a toothpick comes out clean. Let cool before eating."],
+      notes: "Recipe from @eat.cheat.train.sleep. Only 165 calories each. Swap blueberries for strawberries, any berries, or chocolate chips — whatever you're feeling. Using monk fruit instead of sugar keeps it low calorie."
+    },
+    {
+      id: uid(),
+      name: "Cacio e Pepe",
+      category: "Dinner",
+      serves: "2",
+      ingredients: ["8 oz spaghetti or tonnarelli","2 oz Pecorino Romano, finely grated","1 oz Parmesan, finely grated","1.5 tsp freshly cracked black pepper","Reserved pasta water"],
+      steps: ["Toast black pepper in a dry skillet over medium heat 1 min until fragrant. Set aside.","Cook pasta in well-salted boiling water. Reserve at least 1 cup pasta water before draining — this is essential.","Mix grated cheeses together. Add a few tablespoons of hot pasta water to the cheese and stir into a smooth paste.","Add drained pasta to the skillet with the toasted pepper over low heat.","Add cheese paste and toss vigorously, adding pasta water a little at a time until you have a creamy, glossy sauce that coats every strand.","Serve immediately with extra Pecorino and cracked pepper on top."],
+      notes: "The technique is everything here — low heat and constant tossing prevents the cheese from clumping. Finely grated cheese (use a microplane) melts much more smoothly than coarse grating."
+    }
+  ];
+}
+
+let data = loadData();
+let currentFilter = 'all';
+let editingId = null;
+let pickTarget = null;
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function switchView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('nav button').forEach((b, i) => {
+    b.classList.toggle('active', ['recipes','planner','shopping'][i] === id);
+  });
+  if (id === 'planner') renderPlanner();
+  if (id === 'shopping') renderShopping();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalIfOverlay(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+function filterRecipes(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderRecipes();
+}
+
+function renderRecipes() {
+  const grid = document.getElementById('recipes-grid');
+  const filtered = currentFilter === 'all' ? data.recipes : data.recipes.filter(r => r.category === currentFilter);
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>No recipes yet in this category.</p><p>Add your first one above.</p><button class="btn-primary" onclick="openAddRecipe()">+ Add Recipe</button></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(r => `
+    <div class="recipe-card" onclick="viewRecipe('${r.id}')">
+      <div class="recipe-card-category">${r.category}</div>
+      <h3>${r.name}</h3>
+      <div class="recipe-card-meta">
+        <span>${r.ingredients.length} ingredients</span>
+        ${r.serves ? `<span>Serves ${r.serves}</span>` : ''}
+      </div>
+      <div class="recipe-card-actions" onclick="event.stopPropagation()">
+        <button class="btn-ghost" onclick="openEditRecipe('${r.id}')">Edit</button>
+        <button class="btn-danger" onclick="deleteRecipe('${r.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewRecipe(id) {
+  const r = data.recipes.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('detail-content').innerHTML = `
+    <div class="modal-category">${r.category}</div>
+    <h2>${r.name}</h2>
+    ${r.serves ? `<p class="modal-serves">Serves ${r.serves}</p>` : '<p class="modal-serves"></p>'}
+    <p class="modal-section-label">Ingredients</p>
+    <ul class="modal-ingredients">${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    <p class="modal-section-label">Instructions</p>
+    <div class="modal-steps"><ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>
+    ${r.notes ? `<div class="modal-notes">${r.notes}</div>` : ''}
+  `;
+  openModal('modal-detail');
+}
+
+function openAddRecipe() {
+  editingId = null;
+  document.getElementById('form-title').textContent = 'Add Recipe';
+  document.getElementById('form-submit-btn').textContent = 'Save recipe';
+  document.getElementById('recipe-form').reset();
+  openModal('modal-form');
+}
+
+function openEditRecipe(id) {
+  const r = data.recipes.find(x => x.id === id);
+  if (!r) return;
+  editingId = id;
+  document.getElementById('form-title').textContent = 'Edit Recipe';
+  document.getElementById('form-submit-btn').textContent = 'Save changes';
+  document.getElementById('f-name').value = r.name;
+  document.getElementById('f-category').value = r.category;
+  document.getElementById('f-serves').value = r.serves || '';
+  document.getElementById('f-ingredients').value = r.ingredients.join('\n');
+  document.getElementById('f-steps').value = r.steps.join('\n');
+  document.getElementById('f-notes').value = r.notes || '';
+  openModal('modal-form');
+}
+
+function saveRecipe(e) {
+  e.preventDefault();
+  const recipe = {
+    id: editingId || uid(),
+    name: document.getElementById('f-name').value.trim(),
+    category: document.getElementById('f-category').value,
+    serves: document.getElementById('f-serves').value.trim(),
+    ingredients: document.getElementById('f-ingredients').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    steps: document.getElementById('f-steps').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    notes: document.getElementById('f-notes').value.trim()
+  };
+  if (editingId) {
+    const idx = data.recipes.findIndex(x => x.id === editingId);
+    if (idx > -1) data.recipes[idx] = recipe;
+  } else {
+    data.recipes.push(recipe);
+  }
+  saveData();
+  closeModal('modal-form');
+  renderRecipes();
+}
+
+function deleteRecipe(id) {
+  if (!confirm('Remove this recipe?')) return;
+  data.recipes = data.recipes.filter(x => x.id !== id);
+  for (const key in data.planner) { if (data.planner[key] === id) delete data.planner[key]; }
+  saveData();
+  renderRecipes();
+}
+
+function renderPlanner() {
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = DAYS.map(day => `
+    <div class="day-col">
+      <div class="day-label">${day.slice(0,3)}</div>
+      ${MEALS.map(meal => {
+        const key = day + '__' + meal;
+        const rid = data.planner[key];
+        const recipe = rid ? data.recipes.find(r => r.id === rid) : null;
+        return `
+          <div class="meal-slot ${recipe ? 'filled' : ''}" onclick="pickRecipeFor('${day}','${meal}')">
+            <div class="meal-slot-label">${meal}</div>
+            ${recipe
+              ? `<div class="meal-slot-recipe">${recipe.name}</div><button class="meal-slot-remove" onclick="clearSlot(event,'${day}','${meal}')">✕</button>`
+              : `<div class="meal-slot-empty-hint">+</div>`}
+          </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function pickRecipeFor(day, meal) {
+  pickTarget = { day, meal };
+  document.getElementById('pick-list').innerHTML = data.recipes.map(r => `
+    <li onclick="assignRecipe('${r.id}')">
+      <span class="pick-cat">${r.category}</span>
+      <span class="pick-name">${r.name}</span>
+    </li>
+  `).join('');
+  openModal('modal-pick');
+}
+
+function assignRecipe(id) {
+  if (!pickTarget) return;
+  data.planner[pickTarget.day + '__' + pickTarget.meal] = id;
+  saveData();
+  closeModal('modal-pick');
+  renderPlanner();
+}
+
+function clearSlot(e, day, meal) {
+  e.stopPropagation();
+  delete data.planner[day + '__' + meal];
+  saveData();
+  renderPlanner();
+}
+
+function clearPlanner() {
+  if (!confirm('Clear the whole week?')) return;
+  data.planner = {};
+  saveData();
+  renderPlanner();
+}
+
+const SECTION_MAP = {
+  'produce': ['garlic','onion','tomato','lemon','lime','lettuce','spinach','herb','green onion','scallion','cilantro','pepper','jalapeño','corn','mushroom','basil'],
+  'meat & seafood': ['chicken','beef','pork','salmon','shrimp','turkey','steak','ground'],
+  'dairy & eggs': ['egg','eggs','mozzarella','cheese','milk','butter','cream','sour cream','parmesan','burrata','pecorino'],
+  'pasta & grains': ['pasta','spaghetti','penne','rice','quinoa','noodle','tortilla','bread','bun','tonnarelli','rigatoni'],
+  'canned & pantry': ['sauce','beans','broth','tomato','flour','panko','bread crumb','oil','vinegar','amino','soy','stock','oat milk','protein powder'],
+  'frozen': ['frozen','berries'],
+  'spices & condiments': ['salt','pepper','garlic powder','seasoning','spice','salsa','hot sauce','cumin','ketchup','pickle'],
+};
+
+function categorizeIngredient(text) {
+  const lower = text.toLowerCase();
+  for (const [section, keywords] of Object.entries(SECTION_MAP)) {
+    if (keywords.some(k => lower.includes(k))) return section;
+  }
+  return 'other';
+}
+
+function buildShoppingList() {
+  const allIngredients = {};
+  for (const [key, rid] of Object.entries(data.planner)) {
+    const recipe = data.recipes.find(r => r.id === rid);
+    if (!recipe) continue;
+    recipe.ingredients.forEach(ing => {
+      const section = categorizeIngredient(ing);
+      if (!allIngredients[section]) allIngredients[section] = [];
+      const exists = allIngredients[section].find(x => x.text.toLowerCase() === ing.toLowerCase());
+      if (!exists) {
+        allIngredients[section].push({ text: ing, checked: false, source: recipe.name });
+      } else if (!exists.source.includes(recipe.name)) {
+        exists.source += ', ' + recipe.name;
+      }
+    });
+  }
+  if (Object.keys(allIngredients).length === 0) {
+    alert("Your meal plan is empty — add some recipes to your planner first.");
+    return;
+  }
+  data.shopping = allIngredients;
+  saveData();
+  switchView('shopping');
+}
+
+function renderShopping() {
+  const content = document.getElementById('shopping-content');
+  const subtitle = document.getElementById('shopping-subtitle');
+  if (!data.shopping || Object.keys(data.shopping).length === 0) {
+    subtitle.textContent = 'Build from your meal plan, or add items manually.';
+    content.innerHTML = `<div class="shopping-empty"><p>No list yet.</p><p>Fill out your meal plan and hit "Build shopping list" to generate one automatically.</p><button class="btn-primary" onclick="switchView('planner')">Go to Meal Planner</button></div>`;
+    return;
+  }
+  const mealCount = Object.keys(data.planner).length;
+  subtitle.textContent = `Generated from ${mealCount} planned meal${mealCount !== 1 ? 's' : ''} this week.`;
+  const sectionOrder = ['produce','meat & seafood','dairy & eggs','pasta & grains','canned & pantry','frozen','spices & condiments','other'];
+  const sections = sectionOrder.filter(s => data.shopping[s] && data.shopping[s].length > 0);
+  content.innerHTML = sections.map(section => `
+    <div class="shopping-section">
+      <div class="shopping-section-title">${section.charAt(0).toUpperCase() + section.slice(1)}</div>
+      ${data.shopping[section].map((item, i) => `
+        <div class="shopping-item ${item.checked ? 'checked' : ''}" id="si-${section.replace(/\s/g,'-')}-${i}">
+          <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItem('${section}', ${i}, this.checked)">
+          <span>${item.text}</span>
+          <span class="shopping-item-source">${item.source}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleItem(section, idx, checked) {
+  if (data.shopping[section]?.[idx]) {
+    data.shopping[section][idx].checked = checked;
+    saveData();
+    const el = document.getElementById(`si-${section.replace(/\s/g,'-')}-${idx}`);
+    if (el) el.classList.toggle('checked', checked);
+  }
+}
+
+function clearChecked() {
+  for (const section in data.shopping) {
+    data.shopping[section] = data.shopping[section].filter(i => !i.checked);
+    if (!data.shopping[section].length) delete data.shopping[section];
+  }
+  saveData();
+  renderShopping();
+}
+
+function copyList() {
+  let text = "Shopping List\n\n";
+  ['produce','meat & seafood','dairy & eggs','pasta & grains','canned & pantry','frozen','spices & condiments','other'].forEach(section => {
+    if (data.shopping[section]?.length) {
+      text += section.toUpperCase() + '\n';
+      data.shopping[section].forEach(item => { text += (item.checked ? '✓ ' : '• ') + item.text + '\n'; });
+      text += '\n';
+    }
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.shopping-header .btn-secondary');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = orig, 1800);
+  }).catch(() => alert(text));
+}
+
+renderRecipes();
+</script>
+</body>
+</html>
